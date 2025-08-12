@@ -1,0 +1,2 @@
+# Minimal requirements for Lambda (boto3 is provided by AWS)
+jsonschema
