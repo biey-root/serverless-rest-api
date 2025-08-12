@@ -20,6 +20,8 @@ module "lambda" {
   project = var.project
   stage = var.stage
   table_name = module.ddb.table_name
+  ddb_arn    = module.ddb.table_arn
+  lambda_package = var.lambda_package
 }
 
 module "api" {
@@ -27,6 +29,7 @@ module "api" {
   project = var.project
   stage = var.stage
   lambda_arn = module.lambda.lambda_arn
+  lambda_function_name = module.lambda.lambda_function_name
 }
 
 module "observability" {
@@ -38,6 +41,4 @@ module "observability" {
 
 module "iam_oidc" {
   source = "./modules/iam-oidc"
-  project = var.project
-  stage = var.stage
 }

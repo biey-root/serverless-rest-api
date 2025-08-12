@@ -16,6 +16,3 @@ resource "aws_dynamodb_table" "todos" {
   }
 }
 
-output "table_name" {
-  value = aws_dynamodb_table.todos.name
-}

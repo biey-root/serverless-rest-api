@@ -8,6 +8,15 @@ resource "aws_apigatewayv2_api" "todos" {
   }
 }
 
+# Allow API Gateway to invoke the Lambda function
+resource "aws_lambda_permission" "api" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.todos.execution_arn}/*/*"
+}
+
 resource "aws_apigatewayv2_integration" "lambda" {
   api_id           = aws_apigatewayv2_api.todos.id
   integration_type = "AWS_PROXY"
@@ -33,15 +42,32 @@ resource "aws_apigatewayv2_stage" "prod" {
   api_id      = aws_apigatewayv2_api.todos.id
   name        = var.stage
   auto_deploy = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_logs.arn
+    format = jsonencode({
+      requestId          = "$context.requestId"
+      ip                = "$context.identity.sourceIp"
+      requestTime       = "$context.requestTime"
+      httpMethod        = "$context.httpMethod"
+      routeKey          = "$context.routeKey"
+      status           = "$context.status"
+      protocol         = "$context.protocol"
+      responseLength   = "$context.responseLength"
+      integrationError = "$context.integration.error"
+      integrationStatus = "$context.integration.status"
+      integrationLatency = "$context.integration.latency"
+    })
+  }
 }
 
-output "api_base_url" {
-  value = aws_apigatewayv2_stage.prod.invoke_url
-}
-output "api_id" {
-  value = aws_apigatewayv2_api.todos.id
+# Log group for API Gateway access logs
+resource "aws_cloudwatch_log_group" "api_logs" {
+  name              = "/aws/apigateway/${var.project}-todos-api-${var.stage}/access-logs"
+  retention_in_days = 7
 }
 
 variable "project" { type = string }
 variable "stage" { type = string }
 variable "lambda_arn" { type = string }
+variable "lambda_function_name" { type = string }

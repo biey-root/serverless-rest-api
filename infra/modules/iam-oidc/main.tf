@@ -46,7 +46,3 @@ data "aws_iam_policy_document" "github_oidc_policy" {
     resources = ["*"]
   }
 }
-
-variable "project" { type = string }
-variable "stage" { type = string }
-variable "github_repo" { type = string }

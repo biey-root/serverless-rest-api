@@ -13,11 +13,6 @@ variable "stage" {
   default = "prod"
 }
 
-variable "lambda_package" {
-  type    = string
-  default = "../lambda.zip"
-}
-
 variable "github_repo" {
   type    = string
   default = "biey-root/serverless-rest-api"
