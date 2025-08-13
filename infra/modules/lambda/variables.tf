@@ -1,0 +1,9 @@
+variable "project" { type = string }
+variable "stage" { type = string }
+variable "cognito_user_pool_id" { type = string }
+variable "cognito_region" { type = string }
+variable "cognito_audience" { type = string }
+variable "cognito_app_client_id" { type = string }
+variable "table_name" { type = string }
+variable "ddb_arn" { type = string }
+variable "lambda_package" { type = string }
