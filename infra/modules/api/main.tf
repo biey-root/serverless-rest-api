@@ -36,35 +36,8 @@ resource "aws_apigatewayv2_route" "todos" {
   api_id    = aws_apigatewayv2_api.todos.id
   route_key = each.value
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
-  api_key_required = each.value != "GET /health" ? true : false
 }
 
-# API Key for API Gateway
-resource "aws_api_gateway_api_key" "this" {
-  name        = "${var.project}-api-key"
-  description = "API key for ${var.project}"
-  enabled     = true
-}
-
-# Usage Plan for API Key
-resource "aws_api_gateway_usage_plan" "this" {
-  name = "${var.project}-usage-plan"
-  api_stages {
-    api_id = aws_apigatewayv2_api.todos.id
-    stage  = aws_apigatewayv2_stage.prod.name
-  }
-  throttle_settings {
-    burst_limit = 100
-    rate_limit  = 50
-  }
-}
-
-# Usage Plan Key association
-resource "aws_api_gateway_usage_plan_key" "this" {
-  key_id        = aws_api_gateway_api_key.this.id
-  key_type      = "API_KEY"
-  usage_plan_id = aws_api_gateway_usage_plan.this.id
-}
 resource "aws_apigatewayv2_stage" "prod" {
   api_id      = aws_apigatewayv2_api.todos.id
   name        = var.stage
